@@ -176,6 +176,13 @@ class Board:
                 return row
         return []
 
+    def has_line(self, symbol: Symbol) -> bool:
+        # Check if the given symbol has a winning line
+        for line in self.win_conditions:
+            if all(self.square_value(square) == symbol for square in line): # Check if all squares in the line have the given symbol
+                return True
+        return False
+
     def is_draw(self) -> bool:
         """Check for draw
 
@@ -190,16 +197,34 @@ class Board:
         """Get the winner of the match
 
         Returns:
-            Optional[Symbol]: Symbol of connected tiles if exists
+            Optional[Symbol]: the first line wins unless the opponent answers with a line on their response move
         """
-        connection = self.get_connection()
-        if len(connection) == 0:
-            return None
-        elif self.square_value(connection[0]) == Symbol.CIRCLE:
-            return Symbol.CIRCLE
-        else:
-            return Symbol.CROSS
+        #find out who made the last move
+        full_squares = (self.size**2) - len(self.empty_squares)
 
+        #determine the last player based on the number of filled squares
+        if full_squares % 2 == 1:
+            last = self.first_move
+        else:
+            last = Symbol.CIRCLE if self.first_move == Symbol.CROSS else Symbol.CROSS
+        other = Symbol.CROSS if last == Symbol.CIRCLE else Symbol.CIRCLE
+
+        #check if either player has a winning line
+        last_line = self.has_line(last)
+        other_line = self.has_line(other)
+
+        #determine the winner based on the winning lines
+        if not last_line and not other_line:
+            return None
+        if last_line and not other_line and len(self.empty_squares) != 0:
+            return None
+        if (last_line and len(self.empty_squares) == 0) or (last_line and other_line):
+            return last
+        if not last_line and other_line:
+            return other
+        
+        return None
+    
     def is_gameover(self) -> bool:
         """Check for gameover
 
@@ -269,7 +294,6 @@ class Board:
                 print('-' * (self.size * 5))
         print('-' * (self.size * 5))
         print()
-
 
 if __name__ == "__main__":
     # CLI game for two player mode
