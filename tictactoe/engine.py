@@ -53,7 +53,7 @@ class Engine:
         if board.winner() == self.ai:
             return board.size**2 - depth
         elif board.winner() == self.foe:
-            return depth - board.size**2 #ai should want to lose fast, lower depth, greater cost.
+            return depth - board.size**2 #losses at lower depth score worse, so the ai will delay a loss as much as possible
         return 0
 
     def evaluate_best_move(self, board: Board) -> Square:

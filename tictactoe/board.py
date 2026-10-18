@@ -177,7 +177,7 @@ class Board:
         return []
 
     def has_line(self, symbol: Symbol) -> bool:
-        # Check if the given symbol has a winning line
+        """Check if the given symbol has a winning line"""
         for line in self.win_conditions:
             if all(self.square_value(square) == symbol for square in line): # Check if all squares in the line have the given symbol
                 return True
@@ -195,7 +195,8 @@ class Board:
 
     def winner(self) -> Optional[Symbol]:
         """Get the winner of the match
-
+        If a player makes three in a row, the opponent gets one more move
+        to answer with a line of their own, if they do, the first player loses, if they don't, the first player wins
         Returns:
             Optional[Symbol]: the first line wins unless the opponent answers with a line on their response move
         """
